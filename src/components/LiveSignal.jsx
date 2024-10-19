@@ -39,7 +39,8 @@ function LiveSignal() {
   // Display the signal strength and SSID
   return (
     <div className='pt-3 px-3'>
-      <Network ssid={data.SSID} signalStrength={data["Signal Strength"]} bssid='test'/>
+      <h3 className='text-center fw-bolder fs-1 mb-4 mt-3'>My Network</h3>
+      <Network ssid={data.SSID} signalStrength={data["Signal Strength"]} bssid={data.BSSID}/>
       <div className='d-flex justify-content-end  mt-3'>
         <button className="fs-5 btn btn-outline-primary fw-bold border-2 me-2" onClick={seeGraph}>
           See Graph
