@@ -6,30 +6,32 @@ function Header()
 {
 
 return (
-  <header className=" border-bottom border-3 d-flex align-items-center w-100 position-relative">
-    <h1
-      className="ms-4  fw-bolder position-absolute text-primary text-center"
-      style={{ fontSize: "48px" }}
-    >
-      Wi-Fi<span style={{ fontSize: "31pt" }}>nder</span>
-    </h1>
+  <header className=" border-bottom border-3 d-flex align-items-center w-100">
+    <Link to='/' className="m-0 p-0 text-decoration-none" >
+      <h1
+        className="ms-4  fw-bolder  text-primary text-center"
+        style={{ fontSize: "48px" }}
+      >
+        Wi-Fi<span style={{ fontSize: "31pt" }}>nder</span>
+      </h1>
+    </Link>
 
     <div className="d-flex gap-4 me-5 align-items-center position-absolute end-0">
-      <Link to='/my/network'>
+      <Link to="/my/network">
         <span className="fs-5 btn btn-outline-primary fw-bold border-2">
-        My Network
+          My Network
         </span>
       </Link>
 
-      <Link to='/networks'>
+      <Link to="/networks">
         <span className="fs-5 btn btn-outline-primary fw-bold border-2">
-        Networks
+          Networks
         </span>
       </Link>
 
-      <Link to='/connect'>
+      <Link to="/connect">
         <span className="fs-5 btn btn-outline-primary fw-bold border-2">
-        Connect
+          Connect
         </span>
       </Link>
     </div>

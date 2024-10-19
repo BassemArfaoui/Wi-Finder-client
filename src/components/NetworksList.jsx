@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Network from './Network';
+import Spinner from './Spinner';
 
 function NetworksList() {
   const { data, error, isLoading } = useQuery({
@@ -16,12 +17,12 @@ function NetworksList() {
 
   // Handle loading state
   if (isLoading) {
-    return <div>Loading networks...</div>;
+    return <div><Spinner/></div>;
   }
 
   // Handle error state
   if (error) {
-    return <div>Error fetching networks: {error.message}</div>;
+    return <div className='h-100 d-flex justify-content-center align-items-center fw-bold fs-4 text-danger'>Error Fetching Nearby Networks 😿</div>;
   }
 
   // Display networks list
