@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/App';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 
 const queryClient = new QueryClient();
@@ -11,7 +12,9 @@ root.render(
 
 
   <QueryClientProvider client={queryClient}>
-    <App />
+        <Router>
+          <App />
+        </Router>
   </QueryClientProvider>
 
 );
