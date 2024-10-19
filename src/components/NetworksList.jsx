@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Network from './Network';
 import Spinner from './Spinner';
+import WifiOffRoundedIcon from '@mui/icons-material/WifiOffRounded';
 
 function NetworksList() {
   const { data, error, isLoading } = useQuery({
@@ -30,7 +31,7 @@ function NetworksList() {
 
   return (
     <div className='w-100' style={{height:'85vh',overflow:'auto'}}>
-      <h3 className='text-center fw-bolder fs-1 mb-4 mt-3'>Discovered Wi-Fi Networks</h3>
+      {networks.length >0 && <h3 className='text-center fw-bolder fs-1 mb-4 mt-3'>Discovered Wi-Fi Networks</h3>}
       {networks.length > 0 ? (
         <div className='px-3 d-flex flex-column gap-2 pb-5 pt-2'>
           {networks.map((network, index) => (
@@ -38,7 +39,7 @@ function NetworksList() {
           ))}
         </div>
       ) : (
-        <p>No networks found.</p>
+        <div className='h-100 d-flex justify-content-center align-items-center fw-bold fs-4 text-primary'> <span className='me-2'>No Networks Found </span><span><WifiOffRoundedIcon className='mb-2 fs-3'/></span></div>
       )}
     </div>
   );

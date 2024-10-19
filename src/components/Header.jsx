@@ -1,6 +1,7 @@
 import React , {useEffect} from "react";
 import './styles/Header.css'
 import { Link } from "react-router-dom";
+import Logo from "./Logo";
 
 function Header()
 {
@@ -8,12 +9,7 @@ function Header()
 return (
   <header className=" border-bottom border-3 d-flex align-items-center w-100">
     <Link to='/' className="m-0 p-0 text-decoration-none" >
-      <h1
-        className="ms-4  fw-bolder  text-primary text-center"
-        style={{ fontSize: "48px" }}
-      >
-        Wi-Fi<span style={{ fontSize: "31pt" }}>nder</span>
-      </h1>
+        <Logo/>
     </Link>
 
     <div className="d-flex gap-4 me-5 align-items-center position-absolute end-0">

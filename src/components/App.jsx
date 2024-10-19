@@ -7,6 +7,7 @@ import NetworksList from "./NetworksList";
 import Connect from "./Connect";
 import { Routes, Route } from 'react-router-dom';
 import CustomToaster from "./CustomToaster";
+import Home from "./Home";
 
 
 
@@ -19,7 +20,7 @@ return (
     <Header />
     <Main>
     <Routes>
-        <Route path="/" element={<br/>} />
+        <Route path="/" element={<Home/>} />
         <Route path="/networks" element={<NetworksList />} />
         <Route path="/my/network" element={<LiveSignal />} />
         <Route path="/connect" element={<Connect />} />
