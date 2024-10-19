@@ -1,0 +1,27 @@
+.main-cont
+{
+    height: 85vh;
+}
+
+.sidebar, .main-content {
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .sidebar {
+    padding: 20px;
+  }
+  
+  .main-content {
+    padding: 20px;
+    border-left: 3px solid #929496;
+  }
+
+  button
+  {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 22px;
+  }
+  
