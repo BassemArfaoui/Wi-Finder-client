@@ -1,10 +1,34 @@
 import React , {useEffect} from "react";
 import './styles/Header.css'
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "./Logo";
 
 function Header()
 {
+  const location = useLocation();
+
+  function updateMenuButton() {
+    const btn = document.querySelectorAll('.menu-btn');
+  
+    btn.forEach(element => {
+        if(element.name === location.pathname)
+        {element.classList.remove('btn-outline-primary');
+        element.classList.add('btn-primary');
+        }
+        else
+        {element.classList.remove('btn-primary');
+        element.classList.add('btn-outline-primary');
+        }
+      
+      
+    });
+  }
+
+
+  useEffect(() => {
+    updateMenuButton();
+  }, [location.pathname]);
+
 
 return (
   <header className=" border-bottom border-3 d-flex align-items-center w-100">
@@ -14,21 +38,21 @@ return (
 
     <div className="d-flex gap-4 me-5 align-items-center position-absolute end-0">
       <Link to="/my/network">
-        <span className="fs-5 btn btn-outline-primary fw-bold border-2">
+        <button className="menu-btn fs-5 btn btn-outline-primary fw-bold border-2" name='/my/network'>
           My Network
-        </span>
+        </button>
       </Link>
 
       <Link to="/networks">
-        <span className="fs-5 btn btn-outline-primary fw-bold border-2">
+        <button className="menu-btn fs-5 btn btn-outline-primary fw-bold border-2" name='/networks'>
           Networks
-        </span>
+        </button>
       </Link>
 
       <Link to="/connect">
-        <span className="fs-5 btn btn-outline-primary fw-bold border-2">
+        <button className="menu-btn fs-5 btn btn-outline-primary fw-bold border-2" name='/connect'>
           Connect
-        </span>
+        </button>
       </Link>
     </div>
   </header>
