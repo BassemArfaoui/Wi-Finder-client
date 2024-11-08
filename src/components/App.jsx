@@ -8,6 +8,7 @@ import Connect from "./Connect";
 import { Routes, Route } from 'react-router-dom';
 import CustomToaster from "./CustomToaster";
 import Home from "./Home";
+import Locate from "./Locate";
 
 
 
@@ -24,6 +25,8 @@ return (
         <Route path="/networks" element={<NetworksList />} />
         <Route path="/my/network" element={<LiveSignal />} />
         <Route path="/connect" element={<Connect />} />
+        <Route path="/locate" element={<Locate />} />
+
       </Routes>
     </Main>
   </div>

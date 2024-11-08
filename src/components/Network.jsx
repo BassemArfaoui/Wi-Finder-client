@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, Typography, LinearProgress } from '@mui/
 import WifiIcon from '@mui/icons-material/Wifi';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function WifiInfoCard({ ssid, bssid, signalStrength = '30' }) {
+export default function WifiInfoCard({ ssid, bssid, signalStrength }) {
   const getSignalColor = (strength) => {
     if (strength >= 80) return "success";
     if (strength >= 60) return "info";

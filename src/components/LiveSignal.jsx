@@ -65,7 +65,6 @@ function LiveSignal() {
         </button>
       </div>
 
-      {/* Suspense for lazy-loading DistanceModal */}
       <Suspense fallback={<Spinner />}>
         <DistanceModal closeModal={closeModal} openModal={openModal} showDistanceModal={showDistanceModal} />
       </Suspense>

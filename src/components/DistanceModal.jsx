@@ -6,16 +6,19 @@ import { Box, IconButton, Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 function DistanceModal({ showDistanceModal, closeModal }) {
-  // Use React Query to fetch data with an object-based configuration
   const { data: networkData, isLoading, error } = useQuery({
     queryKey: ['networkData'],
     queryFn: async () => {
       const response = await axios.get('http://localhost:9000/');
       return response.data;
     },
-    enabled: showDistanceModal, // Only fetch when modal is open
-    refetchOnWindowFocus: false, // Optional: Disable refetch on window focus
+    enabled: showDistanceModal, 
+    refetchOnWindowFocus: false, 
+    refetchInterval: 2000,
   });
+
+  const firstSsid = networkData && Object.keys(networkData)[0];
+  const firstDistance = firstSsid ? networkData[firstSsid]["Distance (m)"] : null;
 
   return (
     <Modal
@@ -61,13 +64,9 @@ function DistanceModal({ showDistanceModal, closeModal }) {
               <span className='small'>Loading...</span>
             ) : error ? (
               <span className="text-danger">Error loading data</span>
-            ) : networkData && Object.keys(networkData).length > 0 ? (
-              <div>
-                {Object.keys(networkData).map((ssid) => (
-                  <div key={ssid} className='bg-secondary px-4 py-2 rounded-4 my-2 text-center'>
-                    <div className='fw-bold'>{parseFloat(networkData[ssid]["Distance (m)"].toFixed(2))} meters</div>
-                  </div>
-                ))}
+            ) : firstDistance !== null ? (
+              <div className='bg-secondary px-4 py-2 rounded-4 my-2 text-center'>
+                <div className='fw-bold'>{parseFloat(firstDistance.toFixed(2))} meters</div>
               </div>
             ) : (
               <span>No data available</span>

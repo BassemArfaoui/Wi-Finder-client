@@ -54,6 +54,12 @@ return (
           Connect
         </button>
       </Link>
+
+      <Link to="/locate">
+        <button className="menu-btn fs-5 btn btn-outline-primary fw-bold border-2" name='/locate'>
+          Locate
+        </button>
+      </Link>
     </div>
   </header>
 );
