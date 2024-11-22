@@ -60,6 +60,12 @@ return (
           Locate
         </button>
       </Link>
+
+      <Link to="/decode">
+        <button className="menu-btn fs-5 btn btn-outline-primary fw-bold border-2" name='/decode'>
+          Decode
+        </button>
+      </Link>
     </div>
   </header>
 );

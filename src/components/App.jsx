@@ -9,6 +9,7 @@ import { Routes, Route } from 'react-router-dom';
 import CustomToaster from "./CustomToaster";
 import Home from "./Home";
 import Locate from "./Locate";
+import DecodePage from "./DecodePage";
 
 
 
@@ -26,6 +27,7 @@ return (
         <Route path="/my/network" element={<LiveSignal />} />
         <Route path="/connect" element={<Connect />} />
         <Route path="/locate" element={<Locate />} />
+        <Route path="/decode" element={<DecodePage />} />
 
       </Routes>
     </Main>
