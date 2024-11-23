@@ -1,227 +1,177 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Modal, Box, Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from "@mui/material";
+import { Typography, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import { notify } from "./CustomToaster";
+import DecodeCard from "./DecodeCard"; 
 
 function DecodePage() {
     const [file, setFile] = useState(null);
     const [decodedData, setDecodedData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-    const [openNewMethodModal, setOpenNewMethodModal] = useState(false); // New modal state for the new method
+    const [selectedMethod, setSelectedMethod] = useState("RawPcapReader");
+    const [hasDecoded, setHasDecoded] = useState(false); 
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+        setDecodedData([]); 
+        setHasDecoded(false); 
+    };
+
+    const handleMethodChange = (e) => {
+        setSelectedMethod(e.target.value);
+        setDecodedData([]); 
+        setHasDecoded(false);
     };
 
     const handleUpload = async () => {
         if (!file) {
             notify("Please select a file to upload.");
+            setDecodedData([]);
+            return;
+        }
+
+        const fileExtension = file.name.split(".").pop().toLowerCase();
+        if (fileExtension !== "pcap") {
+            notify("File must be a pcap file.");
+            setDecodedData([]); 
             return;
         }
 
         setLoading(true);
-        setOpenModal(true);
 
         const formData = new FormData();
         formData.append("file", file);
 
         try {
-            const response = await axios.post("http://localhost:7000/upload", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            let response;
+            if (selectedMethod === "RawPcapReader") {
+                response = await axios.post("http://localhost:7000/upload", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            } else if (selectedMethod === "PcapReader") {
+                response = await axios.post("http://localhost:7000/upload-and-decode-new", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+            } else if (selectedMethod === "SimplifiedDecode") {
+                if (!hasDecoded) {
+                    setHasDecoded(true); 
+                    response = await axios.post("http://localhost:7000/simplified-decode", formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    });
+                }
+            }
+
             setDecodedData(response.data.decoded_data);
         } catch (err) {
             notify("Failed to upload and decode the file. Please try again.");
+            setDecodedData([]); 
+            setHasDecoded(false); 
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleUploadNew = async () => {
-        if (!file) {
-            notify("Please select a file to upload.");
-            return;
-        }
-
-        setLoading(true);
-        setOpenNewMethodModal(true); // Open the new method modal
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-            const response = await axios.post("http://localhost:7000/upload-and-decode-new", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            setDecodedData(response.data.decoded_data);
-        } catch (err) {
-            notify("Failed to upload and decode the file with the new method. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleCloseModal = () => {
-        setOpenModal(false);
-        setDecodedData([]);
-    };
-
-    const handleCloseNewMethodModal = () => {
-        setOpenNewMethodModal(false);
-        setDecodedData([]);
     };
 
     return (
-        <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-            <div
-                className="w-100 d-flex justify-content-center align-items-center flex-column gap-2"
-                style={{ padding: "20px" }}
-            >
-                <h3 className="fs-4 fw-bold">Add a PCAP File to Decode</h3>
-                <input
-                    className="d-block form-control w-25 py-2 fw-bold"
-                    type="file"
-                    onChange={handleFileChange}
-                />
-                <button
-                    className="btn btn-outline-primary fw-bold border-2 mt-3"
-                    onClick={handleUpload}
-                >
-                    Upload and Decode (RawPcapReader)
-                </button>
-                {/* Button for the new decoding method */}
-                <button
-                    className="btn btn-outline-success fw-bold border-2 mt-3"
-                    onClick={handleUploadNew}
-                >
-                    Upload and Decode (PcapReader)
-                </button>
+        <div className="container-fluid">
+            <div className="row">
+
+                {/* Upload Section */}
+                <div className="col-lg-5 col-md-12 d-flex flex-column align-items-center justify-content-center p-4 pt-5" style={{ height: "80vh" }}>
+                    <div className="w-75 mt-5">
+                        <label className="form-label fw-bold ms-2 text-secondary">Add a file to decode:</label>
+                    </div>
+                    <input
+                        className="form-control mb-3 w-75 py-3 fw-bold"
+                        type="file"
+                        onChange={handleFileChange}
+                    />
+                    <div className="mb-3 w-75">
+                        <label className="form-label fw-bold ms-2 text-secondary">Decoding Method:</label>
+                        <select
+                            className="form-select py-3 fw-bold"
+                            value={selectedMethod}
+                            onChange={handleMethodChange}
+                        >
+                            <option value="RawPcapReader">RawPcapReader</option>
+                            <option value="PcapReader">PcapReader</option>
+                            <option value="SimplifiedDecode">SimplifiedReader</option>
+                        </select>
+                    </div>
+                    <button
+                        variant="outlined"
+                        color="primary"
+                        className="mt-2 btn btn-outline-primary border-2 fw-bold"
+                        onClick={handleUpload}
+                    >
+                        Upload and Decode
+                    </button>
+                </div>
+
+
+                {/* Result Section */}
+                <div className="col-lg-7 col-md-12 p-4">
+                    <Typography variant="h4" className="mb-2 small fw-bold text-primary text-center fs-3">
+                        Decoded File:
+                    </Typography>
+                    <div
+                        className="border rounded-4 border-2 border-dark d-flex justify-content-center align-items-center"
+                        style={{
+                            height: "70vh",
+                            overflow: "auto",
+                            padding: "10px",
+                            backgroundColor: "#f9f9f9",
+                        }}
+                    >
+                        {loading ? (
+                            <div className="d-flex justify-content-center align-items-center">
+                                <CircularProgress />
+                            </div>
+                        ) : decodedData.length > 0 ? (
+                            selectedMethod === "SimplifiedDecode" ? (
+                                <div className="d-flex flex-column gap-0 w-100 align-self-start px-0">
+                                    {decodedData.map((packet, index) => (
+                                        <DecodeCard
+                                            key={index}
+                                            index={index + 1}
+                                            ToDS={packet.ToDS}
+                                            MF={packet.MF}
+                                            WEP={packet.WEP}
+                                            srcMAC={packet.src_MAC}
+                                            destMAC={packet.dest_MAC}
+                                            BSSID={packet.BSSID}
+                                            durationID={packet.Duration_ID}
+                                            sequenceControl={packet.Sequence_Control}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <TableContainer component={Paper} className="mt-0 rounded-3 align-self-start w-100">
+                                    <Table className="">
+                                        <TableHead className="w-100">
+                                            <TableRow className="w-100">
+                                                <TableCell className="fw-bold text-dark">Index</TableCell>
+                                                <TableCell className="fw-bold text-dark">Details</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {decodedData.map((line, index) => (
+                                                <TableRow className="w-100" key={index}>
+                                                    <TableCell className="fw-bold text-dark">{index + 1}</TableCell>
+                                                    <TableCell className="fw-bold text-dark">{line}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            )
+                        ) : (
+                            <Typography className="text-center text-secondary fw-bold">
+                                No Data Decoded,<br />Your Decoded Data Will Appear Here
+                            </Typography>
+                        )}
+                    </div>
+                </div>
             </div>
-
-            {/* Modal for displaying results of the old method */}
-            <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="upload-modal-title"
-                aria-describedby="upload-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        maxHeight: "80vh",
-                        overflowY: "auto",
-                        width: '70%',
-                        bgcolor: "background.paper",
-                        backgroundColor: "#1E1E1E",
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 7,
-                    }}
-                >
-                    <Typography id="upload-modal-title" variant="h6" component="h1" className="text-center text-warning fs-3 fw-bold mb-3">
-                        Decoded File (RawPcapReader)
-                    </Typography>
-                    {loading ? (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                mt: 2,
-                            }}
-                        >
-                            <CircularProgress />
-                        </Box>
-                    ) : decodedData.length > 0 ? (
-                        <TableContainer component={Paper} className="rounded-4">
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell className="fw-bold text-dark">Index</TableCell>
-                                        <TableCell className="fw-bold text-dark">Details</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {decodedData.map((line, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell className="fw-bold text-dark">{index + 1}</TableCell>
-                                            <TableCell className="fw-bold text-dark">{line}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    ) : (
-                        <Typography className="text-light text-center">No data decoded.</Typography>
-                    )}
-                </Box>
-            </Modal>
-
-            {/* Modal for displaying results of the new decoding method */}
-            <Modal
-                open={openNewMethodModal}
-                onClose={handleCloseNewMethodModal}
-                aria-labelledby="new-method-modal-title"
-                aria-describedby="new-method-modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        maxHeight: "80vh",
-                        overflowY: "auto",
-                        width: '70%',
-                        bgcolor: "background.paper",
-                        backgroundColor: "#1E1E1E",
-                        boxShadow: 24,
-                        p: 4,
-                        borderRadius: 7,
-                    }}
-                >
-                    <Typography id="new-method-modal-title" variant="h6" component="h1" className="text-center text-warning fs-3 fw-bold mb-3">
-                        Decoded File (PcapReader)
-                    </Typography>
-                    {loading ? (
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                mt: 2,
-                            }}
-                        >
-                            <CircularProgress />
-                        </Box>
-                    ) : decodedData.length > 0 ? (
-                        <TableContainer component={Paper} className="rounded-4">
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell className="fw-bold text-dark">Index</TableCell>
-                                        <TableCell className="fw-bold text-dark">Details</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {decodedData.map((line, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell className="fw-bold text-dark">{index + 1}</TableCell>
-                                            <TableCell className="fw-bold text-dark">{line}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    ) : (
-                        <Typography className="text-light text-center">No data decoded.</Typography>
-                    )}
-                </Box>
-            </Modal>
         </div>
     );
 }
